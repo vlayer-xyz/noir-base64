@@ -1,9 +1,41 @@
 mod utils;
+
+use dep::std;
 use crate::utils::as_byte;
+
+fn convert_chunk<N>(input: [u8; N], url: bool) -> [u8; 4] {
+    let input_len : u32 = input.len() as u32;
+    assert(input_len > 0 & input_len <= 3, "convert_chunk only accepts arrays of length 1, 2 and 3");
+    let mut result = [64; 4];
+
+    let input0_first6 = input[0] >> 2;
+    let input0_last2 = std::wrapping_shift_left(input[0], 6) >> 2;
+
+    result[0] = input0_first6;
+    result[1] = input0_last2;
+    if input_len > 1 {
+        let input1_first4 = input[1] >> 4;
+        let input1_last4 = std::wrapping_shift_left(input[1], 4) >> 2;
+
+        result[1] += input1_first4;
+        result[2] = input1_last4;
+
+        if input_len > 2 {
+            let input2_first2 = input[2] >> 6;
+            let input2_last6 = std::wrapping_shift_left(input[2], 2) >> 2;
+
+            result[2] += input2_first2;
+            result[3] = input2_last6;
+        }
+    }
+    for i in 0..4 {
+        result[i] = convert_base64_number(result[i], url);
+    }
+    result
+}
 
 fn base64_calculate_length<N>(input: [u8; N]) -> u32 {
     let remainder: u32 = (input.len() as u32) % 3;
-
     4 * (input.len() as u32 / 3 + if remainder == 0 { 0 } else { 1 })
 }
 
@@ -64,4 +96,24 @@ fn test_convert_base64_number() {
     assert_eq(as_byte("="), convert_base64_number_url(64));
     assert_eq(as_byte("+"), convert_base64_number(62, false));
     assert_eq(as_byte("/"), convert_base64_number(63, false));
+}
+
+#[test]
+fn test_convert_chunk() {
+    // "f" -> "Zg=="
+    assert_eq(convert_chunk([102], false), [90, 103, 61, 61]);
+    // "fo" -> "Zm8="
+    assert_eq(convert_chunk([102, 111], false), [90, 109, 56, 61]);
+    // "foo" -> "Zm9v"
+    assert_eq(convert_chunk([102, 111, 111], false), [90, 109, 57, 118]);
+}
+
+#[test(should_fail)]
+fn test_convert_empty_chunk() -> [u8; 4] {
+    convert_chunk([], true)
+}
+
+#[test(should_fail)]
+fn test_convert_too_long_chunk() -> [u8; 4]  {
+    convert_chunk([1, 2, 3, 4], true)
 }
