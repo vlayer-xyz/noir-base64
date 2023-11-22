@@ -1,3 +1,6 @@
+mod utils;
+use crate::utils::as_byte;
+
 fn base64_calculate_length<N>(input: [u8; N]) -> u32 {
     let remainder: u32 = (input.len() as u32) % 3;
 
