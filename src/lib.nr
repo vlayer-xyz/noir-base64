@@ -3,7 +3,7 @@ mod utils;
 use dep::std;
 use crate::utils::as_byte;
 
-fn convert_chunk<N>(input: [u8; N], url: bool) -> [u8; 4] {
+fn convert_chunk<N>(input: [u8; N], url_safe: bool) -> [u8; 4] {
     let input_len : u32 = input.len() as u32;
     assert(input_len > 0 & input_len <= 3, "convert_chunk only accepts arrays of length 1, 2 and 3");
     let mut result = [64; 4];
@@ -29,7 +29,7 @@ fn convert_chunk<N>(input: [u8; N], url: bool) -> [u8; 4] {
         }
     }
     for i in 0..4 {
-        result[i] = convert_base64_number(result[i], url);
+        result[i] = convert_base64_number(result[i], url_safe);
     }
     result
 }
@@ -39,11 +39,7 @@ fn base64_calculate_length<N>(input: [u8; N]) -> u32 {
     4 * (input.len() as u32 / 3 + if remainder == 0 { 0 } else { 1 })
 }
 
-fn convert_base64_number_url(n: u8) -> u8 {
-    convert_base64_number(n, true)
-}
-
-fn convert_base64_number(n: u8, url: bool) -> u8 {
+fn convert_base64_number(n: u8, url_safe: bool) -> u8 {
     if n >= 0 & n <= 25 {
         n + 65
     } else if n >= 26 & n <= 51 {
@@ -60,10 +56,10 @@ fn convert_base64_number(n: u8, url: bool) -> u8 {
     else if n == 60 { 56 }
     else if n == 61 { 57 }
     else if n == 62 { 
-        if url { 45 } else { 43 }
+        if url_safe { 45 } else { 43 }
      }
     else if n == 63 { 
-        if url { 95 } else { 47 }
+        if url_safe { 95 } else { 47 }
     } else if n == 64 { 61}
     else { 
         assert(false, "convert_base64_number only accepts numbers between 0 and 64");
@@ -85,15 +81,16 @@ fn test_base64_calculate_length() {
 
 #[test]
 fn test_convert_base64_number() {
-    assert_eq(as_byte("A"), convert_base64_number_url(0));
-    assert_eq(as_byte("Z"), convert_base64_number_url(25));
-    assert_eq(as_byte("a"), convert_base64_number_url(26));
-    assert_eq(as_byte("z"), convert_base64_number_url(51));
-    assert_eq(as_byte("0"), convert_base64_number_url(52));
-    assert_eq(as_byte("9"), convert_base64_number_url(61));
-    assert_eq(as_byte("-"), convert_base64_number_url(62));
-    assert_eq(as_byte("_"), convert_base64_number_url(63));
-    assert_eq(as_byte("="), convert_base64_number_url(64));
+    assert_eq(as_byte("A"), convert_base64_number(0, true));
+    assert_eq(as_byte("Z"), convert_base64_number(25, true));
+    assert_eq(as_byte("a"), convert_base64_number(26, true));
+    assert_eq(as_byte("z"), convert_base64_number(51, true));
+    assert_eq(as_byte("0"), convert_base64_number(52, true));
+    assert_eq(as_byte("9"), convert_base64_number(61, true));
+    assert_eq(as_byte("-"), convert_base64_number(62, true));
+    assert_eq(as_byte("_"), convert_base64_number(63, true));
+    assert_eq(as_byte("="), convert_base64_number(64, true));
+
     assert_eq(as_byte("+"), convert_base64_number(62, false));
     assert_eq(as_byte("/"), convert_base64_number(63, false));
 }
