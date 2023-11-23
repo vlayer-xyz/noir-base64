@@ -1,7 +1,40 @@
 mod utils;
 
 use dep::std;
-use crate::utils::as_byte;
+use crate::utils::{as_byte, as_bytes};
+
+global MAX_LEN = 255;
+
+pub fn encode_str<N, M>(input: str<N>, mut result: [u8; M], url_safe: bool) -> [u8; M] {
+    encode(as_bytes(input), result, url_safe)
+}
+
+pub fn encode<N, M>(input: [u8; N], mut result: [u8; M], url_safe: bool) -> [u8; M] {
+    assert(base64_calculate_length(input) == M);
+
+    let mut max_result = [0; MAX_LEN];
+    let mut max_input = [0; MAX_LEN];
+    for i in 0..input.len() {
+        max_input[i] = input[i];
+    }
+    for i in 0..((N as u32) / 3 + 1) {
+        let chunk = if i * 3 + 2 < N as u32 {
+            convert_chunk([max_input[i * 3], max_input[i * 3 + 1], max_input[i * 3 + 2]], url_safe)
+        } else if i * 3 + 1 < N as u32 {
+            convert_chunk([max_input[i * 3], max_input[i * 3 + 1]], url_safe)
+        } else {
+            convert_chunk([max_input[i * 3]], url_safe)
+        };
+        for j in 0..4 {
+            max_result[i * 4 + j] = chunk[j];
+        }
+    }
+
+    for i in 0..result.len() {
+        result[i] = max_result[i];
+    }
+    result
+}
 
 fn convert_chunk<N>(input: [u8; N], url_safe: bool) -> [u8; 4] {
     let input_len : u32 = input.len() as u32;
@@ -57,14 +90,25 @@ fn convert_base64_number(n: u8, url_safe: bool) -> u8 {
     else if n == 61 { 57 }
     else if n == 62 { 
         if url_safe { 45 } else { 43 }
-     }
+    }
     else if n == 63 { 
         if url_safe { 95 } else { 47 }
     } else if n == 64 { 61}
     else { 
         assert(false, "convert_base64_number only accepts numbers between 0 and 64");
         0 
-    }
+    } as u8
+}
+
+#[test]
+fn test_encode_str() {
+    assert_eq(encode_str("", [], false), []);
+    assert_eq(encode_str("f", [0; 4], false), as_bytes("Zg=="));
+    assert_eq(encode_str("fo", [0; 4], false), as_bytes("Zm8="));
+    assert_eq(encode_str("foo", [0; 4], false), as_bytes("Zm9v"));
+    assert_eq(encode_str("foob", [0; 8], false), as_bytes("Zm9vYg=="));
+    assert_eq(encode_str("fooba", [0; 8], false), as_bytes("Zm9vYmE="));
+    assert_eq(encode_str("foobar", [0; 8], false), as_bytes("Zm9vYmFy"));
 }
 
 #[test]
