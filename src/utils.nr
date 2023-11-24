@@ -30,8 +30,3 @@ fn test_as_bytes() {
     assert_eq([65, 66, 67], as_bytes("ABC"));
     assert_eq([35, 36, 37], as_bytes("#$%"));
 }
-
-#[test]
-fn test1() {
-    assert(102 + 65 == "f".as_bytes()[0] + 65);
-}
