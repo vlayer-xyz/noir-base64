@@ -17,5 +17,6 @@ jobs:
 
       - name: Run example nargo test
         run: |
+          rm Nargo.toml
           cd examples/base64_example/
           nargo test --show-output
