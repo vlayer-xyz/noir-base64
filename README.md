@@ -23,6 +23,24 @@ fn main() {
 }
 ```
 
+## API
+Library exposes two functions:
+
+```rust
+pub fn encode_str<N, M>(input: str<N>, mut result: [u8; M]) -> [u8; M]
+pub fn encode<N, M>(input: [u8; N], mut result: [u8; M], url_safe: bool) -> [u8; M]
+```
+
+- `input` - input string or array of bytes to encode
+- `result` - array of bytes to store result in. it should have a proper size otherwise function will fail on assert.
+- `url_safe` - if `true` then `+` and `/` characters will be replaced with `-` and `_` respectively.
+- Returns `result` array with encoded string. Function result is the same as `result` argument.
+
+## Example project
+Directory `examples/base64_example/` contains example Noir project with `base64` library as dependency.
+
+```bash
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](https://github.com/colinnielsen/noir-array-helpers/blob/main/LICENSE) file for details.
