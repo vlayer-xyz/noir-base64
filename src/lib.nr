@@ -5,8 +5,8 @@ use crate::utils::{as_byte, as_bytes};
 
 global MAX_LEN = 255;
 
-pub fn encode_str<N, M>(input: str<N>, mut result: [u8; M], url_safe: bool) -> [u8; M] {
-    encode(as_bytes(input), result, url_safe)
+pub fn encode_str<N, M>(input: str<N>, mut result: [u8; M]) -> [u8; M] {
+    encode(as_bytes(input), result, false)
 }
 
 pub fn encode<N, M>(input: [u8; N], mut result: [u8; M], url_safe: bool) -> [u8; M] {
@@ -102,13 +102,13 @@ fn convert_base64_number(n: u8, url_safe: bool) -> u8 {
 
 #[test]
 fn test_encode_str() {
-    assert_eq(encode_str("", [], false), []);
-    assert_eq(encode_str("f", [0; 4], false), as_bytes("Zg=="));
-    assert_eq(encode_str("fo", [0; 4], false), as_bytes("Zm8="));
-    assert_eq(encode_str("foo", [0; 4], false), as_bytes("Zm9v"));
-    assert_eq(encode_str("foob", [0; 8], false), as_bytes("Zm9vYg=="));
-    assert_eq(encode_str("fooba", [0; 8], false), as_bytes("Zm9vYmE="));
-    assert_eq(encode_str("foobar", [0; 8], false), as_bytes("Zm9vYmFy"));
+    assert_eq(encode_str("", []), []);
+    assert_eq(encode_str("f", [0; 4]), as_bytes("Zg=="));
+    assert_eq(encode_str("fo", [0; 4]), as_bytes("Zm8="));
+    assert_eq(encode_str("foo", [0; 4]), as_bytes("Zm9v"));
+    assert_eq(encode_str("foob", [0; 8]), as_bytes("Zm9vYg=="));
+    assert_eq(encode_str("fooba", [0; 8]), as_bytes("Zm9vYmE="));
+    assert_eq(encode_str("foobar", [0; 8]), as_bytes("Zm9vYmFy"));
 }
 
 #[test]
