@@ -1,0 +1,8 @@
+[package]
+name = "base64_example"
+type = "bin"
+authors = [""]
+compiler_version = ">=0.19.2"
+
+[dependencies]
+base64 = { tag = "v0.1.0", git = "https://github.com/zkworks-xyz/noir-base64" }
