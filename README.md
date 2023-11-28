@@ -10,7 +10,7 @@ In your `Nargo.toml` file, add the following dependency:
 
 ```toml
 [dependencies]
-base64 = { tag = "v0.1.0", git = "https://github.com/zkworks-xyz/noir-base64" }
+base64 = { tag = "v0.1.1", git = "https://github.com/zkworks-xyz/noir-base64" }
 ```
 
 ## Usage
