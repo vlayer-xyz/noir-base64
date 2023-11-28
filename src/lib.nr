@@ -11,16 +11,16 @@ pub fn encode_str<N, M>(input: str<N>, mut result: [u8; M]) -> [u8; M] {
 }
 
 pub fn encode<N, M>(input: [u8; N], mut result: [u8; M], url_safe: bool) -> [u8; M] {
-    assert(N as u32 < MAX_INPUT_LEN, "input is too long. Max input length is 600");
+    assert(N as u32 <= MAX_INPUT_LEN, "input is too long. Max input length is 600");
     assert(base64_calculate_length(input) == M);
 
-    let mut max_result = [0; MAX_INPUT_LEN];
-    let mut max_input = [0; MAX_RESULT_LEN];
+    let mut max_input = [0; MAX_INPUT_LEN];
+    let mut max_result = [0; MAX_RESULT_LEN];
     if (N as u32 <= MAX_INPUT_LEN) {
         for i in 0..input.len() {
             max_input[i] = input[i];
         }
-        for i in 0..((N as u32) / 3 + 1) {
+        for i in 0..((N as u32 + 2) / 3) {
             let chunk = if i * 3 + 2 < N as u32 {
                 convert_chunk([max_input[i * 3], max_input[i * 3 + 1], max_input[i * 3 + 2]], url_safe)
             } else if i * 3 + 1 < N as u32 {
@@ -113,6 +113,17 @@ fn test_encode_str() {
     assert_eq(encode_str("foob", [0; 8]), as_bytes("Zm9vYg=="));
     assert_eq(encode_str("fooba", [0; 8]), as_bytes("Zm9vYmE="));
     assert_eq(encode_str("foobar", [0; 8]), as_bytes("Zm9vYmFy"));
+    assert_eq(encode_str("abcdefghijklmnopqrstuvwxyz", [0; 36]), as_bytes("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo="));
+}
+
+#[test]
+fn test_encode_str_max_length() {
+    assert_eq(
+            encode_str("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", 
+            [0; 800]
+        ), 
+        as_bytes("MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkw")
+    );
 }
 
 #[test]
