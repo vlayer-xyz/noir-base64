@@ -2,7 +2,7 @@ use dep::base64;
 use dep::std;
 
 fn main() {
-    let result: [u8; 8] = base64::encode_str("foobar", [0; 8], false);
+    let result: [u8; 8] = base64::encode_str("foobar", [0; 8]);
     std::println(result);
 }
 
