@@ -47,6 +47,8 @@ pub fn encode<N, M>(input: [u8; N], mut result: [u8; M], url_safe: bool) -> [u8;
 - `url_safe` - if `true` then `+` and `/` characters will be replaced with `-` and `_` respectively ([RFC4648](https://datatracker.ietf.org/doc/html/rfc4648#section-5))
 - Returns `result` array with encoded string. Function result is also stored in mutable `result` array argument.
 
+Base64 **decoding** is not supported yet. Will be implemented in future releases.
+
 ## Example project
 Directory [examples/base64_example/](https://github.com/zkworks-xyz/noir-base64/tree/main/examples/base64_example) contains example Noir project with `base64` library as dependency.
 
