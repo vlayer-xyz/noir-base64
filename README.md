@@ -35,7 +35,7 @@ pub fn encode<N, M>(input: [u8; N], mut result: [u8; M], url_safe: bool) -> [u8;
 - `result` - array of bytes to store result in. it should have a proper size otherwise function will fail on assert. 
     Due to Noir language limitations result size need to be known at compile time and should be calculated by user.
     Value of this parameter is irrelevant, only size matters.
-- `url_safe` - if `true` then `+` and `/` characters will be replaced with `-` and `_` respectively.
+- `url_safe` - if `true` then `+` and `/` characters will be replaced with `-` and `_` respectively ([RFC4648](https://datatracker.ietf.org/doc/html/rfc4648#section-5))
 - Returns `result` array with encoded string. Function result is the same as `result` argument.
 
 ## Example project
