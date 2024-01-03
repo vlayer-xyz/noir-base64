@@ -46,20 +46,20 @@ fn convert_chunk<N>(input: [u8; N], url_safe: bool) -> [u8; 4] {
     let mut result = [64; 4];
 
     let input0_first6 = input[0] >> 2;
-    let input0_last2 = std::wrapping_shift_left(input[0], 6) >> 2;
+    let input0_last2 = (input[0] << 6) >> 2;
 
     result[0] = input0_first6;
     result[1] = input0_last2;
     if input_len > 1 {
         let input1_first4 = input[1] >> 4;
-        let input1_last4 = std::wrapping_shift_left(input[1], 4) >> 2;
+        let input1_last4 = (input[1] << 4) >> 2;
 
         result[1] += input1_first4;
         result[2] = input1_last4;
 
         if input_len > 2 {
             let input2_first2 = input[2] >> 6;
-            let input2_last6 = std::wrapping_shift_left(input[2], 2) >> 2;
+            let input2_last6 = (input[2] << 2) >> 2;
 
             result[2] += input2_first2;
             result[3] = input2_last6;
